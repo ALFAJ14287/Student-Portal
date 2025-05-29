@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty Registration - Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+  <h2>course Registration</h2>
+  <form id="facultyForm">
+    <label for="level">Level:</label>
+    <select id="level" required>
+      <option value="">Select Level</option>
+      <option value="100L">100L</option>
+      <option value="200L">200L</option>
+      <option value="300L">300L</option>
+      <option value="400L">400L</option>
+    </select>
+
+    <label for="semester">Semester:</label>
+    <select id="semester" required>
+      <option value="">Select Semester</option>
+      <option value="1st">1st</option>
+      <option value="2nd">2nd</option>
+    </select>
+
+    <label>Courses:</label>
+    <div id="coursesList">
+      <label><input type="checkbox" value="CSC101"> CSC101</label><br>
+      <label><input type="checkbox" value="MTH102"> MTH102</label><br>
+      <label><input type="checkbox" value="PHY103"> PHY103</label><br>
+      <label><input type="checkbox" value="GST104"> GST104</label>
+    </div>
+
+    <button type="submit">Submit Registration</button>
+  </form>
+
+  <button id="backBtn">Back to Dashboard</button>
+
+  <script>
+    // Add default admin if not present
+if (!localStorage.getItem("admin")) {
+  localStorage.setItem("admin", JSON.stringify({
+    username: "alfajr",
+    password: "14287"
+  }));
+}
+
+    //Admin//
+      const facultyForm = document.getElementById("facultyForm");
+  const backBtn = document.getElementById("backBtn");
+
+  if (facultyForm) {
+    facultyForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const level = document.getElementById("level").value;
+      const semester = document.getElementById("semester").value;
+      const courseCheckboxes = document.querySelectorAll("#coursesList input[type='checkbox']");
+      const selectedCourses = [];
+
+      courseCheckboxes.forEach(course => {
+        if (course.checked) {
+          selectedCourses.push(course.value);
+        }
+      });
+
+      if (selectedCourses.length === 0) {
+        alert("Please select at least one course.");
+        return;
+      }
+
+      const loggedInUserId = localStorage.getItem("loggedInUser");
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const userIndex = users.findIndex(u => u.admissionNumber === loggedInUserId);
+
+      if (userIndex !== -1) {
+        users[userIndex].registration = {
+          level,
+          semester,
+          courses: selectedCourses
+        };
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Registration successful!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("No user session found.");
+        window.location.href = "index.html";
+      }
+    });
+  }
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "dashboard.html";
+    });
+  }
+
+  </script>
+  <script>
+  if (!localStorage.getItem("loggedInUser")) {
+
+    window.location.href = "index.html";
+  }
+  const coursesListDiv = document.getElementById("coursesList");
+
+if (coursesListDiv) {
+  const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+  courses.forEach(course => {
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="checkbox" value="${course}"> ${course}`;
+    coursesListDiv.appendChild(label);
+    coursesListDiv.appendChild(document.createElement("br"));
+  });
+}
+
+</script>
+
+</body>
+</html>
 
