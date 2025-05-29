@@ -1,1 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+  <h2>Student Registration</h2>
+  <form id="registerForm">
+    <input type="text" placeholder="Full Name" id="name" required>
+    <input type="text" placeholder="Admission Number" id="admissionNumber" required>
+    <input type="text" placeholder="Department" id="department" required>
+    <input type="password" placeholder="Password" id="password" required>
+    <button type="submit">Register</button>
+    <p>Already have an account? <a href="index.html">Login</a></p>
+  </form>
+
+  <script>
+    // Add default admin if not present
+if (!localStorage.getItem("admin")) {
+  localStorage.setItem("admin", JSON.stringify({
+    username: "alfajr",
+    password: "14287"
+  }));
+}
+
+    //Admin
+    document.addEventListener("DOMContentLoaded", function () {
+  const registerForm = document.getElementById("registerForm");
+
+  if (registerForm) {
+    registerForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const admissionNumber = document.getElementById("admissionNumber").value;
+      const department = document.getElementById("department").value;
+      const password = document.getElementById("password").value;
+
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+      // Check if user already exists
+      const exists = users.find(user => user.admissionNumber === admissionNumber);
+      if (exists) {
+        alert("User with this admission number already exists!");
+        return;
+      }
+
+      // Save user
+      users.push({ name, admissionNumber, department, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Registration successful! You can now login.");
+      window.location.href = "index.html";
+    });
+  }
+});
+
+  </script>
+</body>
+</html>
 
