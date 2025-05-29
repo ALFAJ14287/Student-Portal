@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+  <h2>Student Dashboard</h2>
+  <div id="dashboardContent">
+    <p><strong>Name:</strong> <span id="userName"></span></p>
+    <p><strong>Admission Number:</strong> <span id="userAdmission"></span></p>
+    <p><strong>Department:</strong> <span id="userDepartment"></span></p>
+    <p><strong>Registration Status:</strong> <span id="regStatus">Not Registered</span></p>
+
+    <button id="registerBtn">Proceed to Faculty Registration</button>
+    <button id="logoutBtn">Logout</button>
+    <button id="exportBtn">Export</button>
+
+    <!--update-->
+    
+  </div>
+
+  <script>
+    // Add default admin if not present
+if (!localStorage.getItem("admin")) {
+  localStorage.setItem("admin", JSON.stringify({
+    username: "alfajr",
+    password: "14287"
+  }));
+}
+
+    //Admin
+      const userName = document.getElementById("userName");
+  const userAdmission = document.getElementById("userAdmission");
+  const userDepartment = document.getElementById("userDepartment");
+  const regStatus = document.getElementById("regStatus");
+  const registerBtn = document.getElementById("registerBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (userName && userAdmission && userDepartment) {
+    const loggedInUserId = localStorage.getItem("loggedInUser");
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const user = users.find(u => u.admissionNumber === loggedInUserId);
+
+    if (!user) {
+      alert("No active session. Please login.");
+      window.location.href = "index.html";
+    } else {
+      userName.textContent = user.name;
+      userAdmission.textContent = user.admissionNumber;
+      userDepartment.textContent = user.department;
+
+      if (user.registration) {
+        regStatus.textContent = "Registered";
+        regStatus.style.color="red"
+      }
+
+      // Proceed to registration
+      registerBtn.addEventListener("click", () => {
+        window.location.href = "faculty.html";
+      });
+
+      // Logout
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "index.html";
+      });
+    }
+  }
+//Export
+
+  </script>
+  <script>
+  if (!localStorage.getItem("loggedInUser")) {
+    
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>
 
