@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Courses</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+  <h2>Manage Courses</h2>
+  <form id="courseForm">
+    <input type="text" id="newCourse" placeholder="Enter course code (e.g., CSC101)" required>
+    <button type="submit">Add Course</button>
+  </form>
+
+  <ul id="courseList"></ul>
+
+  <button onclick="window.location.href='admin_dashboard.html'">← Back to Admin Dashboard</button>
+
+  <script>
+    const courseForm = document.getElementById("courseForm");
+const courseList = document.getElementById("courseList");
+
+// Initialize default courses if not present
+if (!localStorage.getItem("courses")) {
+  localStorage.setItem("courses", JSON.stringify(["CSC101", "MTH102", "PHY103", "GST104"]));
+}
+
+if (courseForm) {
+  updateCourseList(); // load list
+
+  courseForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const course = document.getElementById("newCourse").value.trim().toUpperCase();
+    if (!course) return;
+
+    let courses = JSON.parse(localStorage.getItem("courses") || "[]");
+    if (courses.includes(course)) {
+      alert("Course already exists.");
+      return;
+    }
+    courses.push(course);
+    localStorage.setItem("courses", JSON.stringify(courses));
+    document.getElementById("newCourse").value = "";
+    updateCourseList();
+  });
+}
+
+function updateCourseList() {
+  const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+  courseList.innerHTML = "";
+
+  courses.forEach((c, index) => {
+    const li = document.createElement("li");
+    li.textContent = c;
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "❌";
+    delBtn.onclick = () => {
+      courses.splice(index, 1);
+      localStorage.setItem("courses", JSON.stringify(courses));
+      updateCourseList();
+    };
+    li.appendChild(delBtn);
+    courseList.appendChild(li);
+  });
+}
+
+  </script>
+</body>
+</html>
 
