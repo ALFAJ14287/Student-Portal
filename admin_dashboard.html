@@ -1,1 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+  <input type="text" id="searchInput" placeholder="Search by name or admission number">
+  <div id="studentList"></div>
+  <button onclick="logoutAdmin()">Logout</button>
+  <button onclick="exportCSV()">Export as CSV</button>
+    <a href="manage_courses.html"><button>Add Courses</button></a>
+
+
+  <script>
+    function logoutAdmin() {
+  localStorage.removeItem("adminLoggedIn");
+  window.location.href = "admin_login.html";
+}
+
+const studentList = document.getElementById("studentList");
+const searchInput = document.getElementById("searchInput");
+
+if (studentList) {
+  if (localStorage.getItem("adminLoggedIn") !== "true") {
+    alert("Admin not logged in.");
+    window.location.href = "admin_login.html";
+  } else {
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    function displayStudents(filter = "") {
+      studentList.innerHTML = "";
+      const filtered = users.filter(user =>
+        user.name.toLowerCase().includes(filter.toLowerCase()) ||
+        user.admissionNumber.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        studentList.innerHTML = "<p>No students found.</p>";
+        return;
+      }
+
+      filtered.forEach(user => {
+        const div = document.createElement("div");
+        div.style.border = "1px solid #ccc";
+        div.style.margin = "10px";
+        div.style.padding = "10px";
+        div.style.borderRadius = "5px";
+        div.innerHTML = `
+          <p><strong>Name:</strong> ${user.name}</p>
+          <p><strong>Admission Number:</strong> ${user.admissionNumber}</p>
+          <p><strong>Department:</strong> ${user.department}</p>
+          <p><strong>Registered:</strong> ${user.registration ? "✅ Yes" : "❌ No"}</p>
+          <button onclick="deleteUser('${user.admissionNumber}')">❌ Delete</button>
+        `;
+        studentList.appendChild(div);
+      });
+    }
+    function deleteUser(admissionNumber) {
+  if (confirm(`Are you sure you want to delete ${admissionNumber}?`)) {
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
+    users = users.filter(u => u.admissionNumber !== admissionNumber);
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("User deleted.");
+    location.reload(); // refresh page
+  }
+}
+
+
+    displayStudents();
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        displayStudents(this.value);
+      });
+    }
+  }
+}
+function exportCSV() {
+  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  if (users.length === 0) {
+    alert("No users to export.");
+    return;
+  }
+
+  let csv = "Name,Admission Number,Department,Level,Semester,Courses\n";
+
+  users.forEach(u => {
+    const reg = u.registration || {};
+    const courses = reg.courses ? reg.courses.join("; ") : "";
+    csv += `${u.name},${u.admissionNumber},${u.department},${reg.level || ""},${reg.semester || ""},${courses}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "students.csv";
+  link.click();
+}
+
+
+  </script>
+</body>
+</html>
 
